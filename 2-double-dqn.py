@@ -34,7 +34,7 @@ class QNetwork(nn.Module):
 		return x
 
 
-class DQN_Agent:
+class DDQN_Agent:
 	def __init__(self, state_size, action_size, seed, learning_rate=1e-4):
 		self.state_size = state_size
 		self.action_size = action_size
@@ -75,11 +75,17 @@ class DQN_Agent:
 	def learn(self, experiences, gamma):
 		states, actions, rewards, next_states, dones = experiences
 
-		Q_targets_next = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
+		#Q_targets_next = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
 
+		q_temp = self.qnetwork_local(next_states).detach()
+		_, a_max = q_temp.max(1)	
+		
+		Q_targets_next = self.qnetwork_target(next_states).detach().gather(1, a_max.unsqueeze(1))
+		#print(Q_targets_next.shape, dones.shape)
 		Q_targets = rewards + gamma * Q_targets_next * (1 - dones)
 		Q_expected = self.qnetwork_local(states).gather(1, actions)
-
+		#print(Q_expected.shape, Q_targets.shape)
+		assert Q_expected.shape == Q_targets.shape, "Mismatched shape"
 		loss = F.mse_loss(Q_expected, Q_targets)
 
 		self.optimizer.zero_grad()
@@ -122,7 +128,7 @@ class DQN_Agent:
 			if i_episode % 500 == 0:
 				print('\rEpisode {} \tAverage Score {:.2f}'.format(i_episode, np.mean(scores_window)))
 				print('Everage steps: ', np.mean(steps[-100:]))
-		torch.save(self.qnetwork_local.state_dict(), './results/pure_dqn_cart_pole.pth')
+		torch.save(self.qnetwork_local.state_dict(), './results/ddqn_cart_pole.pth')
 
 		return scores, steps
 
@@ -149,9 +155,7 @@ if __name__ == '__main__':
 
 
 	env = gym.make('CartPole-v0')
-	#env = gym.make('Taxi-v2')
 	state_size = len(env.reset())
-	#state_size = env.observation_space.n
 	num_actions = env.action_space.n
 
 	print('State size: ', state_size)
@@ -163,7 +167,7 @@ if __name__ == '__main__':
 	print('First qnetwork output: ', q_network(state0))
 
 
-	dqn_agent = DQN_Agent(state_size=state_size, action_size=num_actions, seed=42, learning_rate=LR)
+	dqn_agent = DDQN_Agent(state_size=state_size, action_size=num_actions, seed=42, learning_rate=LR)
 	scores, steps = dqn_agent.dqn_train()
 	print('Done training')
 	env.close()
@@ -180,4 +184,4 @@ if __name__ == '__main__':
 	ax2.set_ylabel('Steps')
 	ax2.set_xlabel('Episode #')
 
-	plt.savefig('./results/pure_dqn_cart_pole.png')
+	plt.savefig('./results/ddqn_cart_pole.png')
