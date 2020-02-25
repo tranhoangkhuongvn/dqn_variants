@@ -47,6 +47,7 @@ class DQN_Agent:
 
 		self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
 		self.t_step = 0
+		self.learning_count = 0
 
 
 	def step(self, state, action, reward, next_state, done):
@@ -73,6 +74,8 @@ class DQN_Agent:
 
 	
 	def learn(self, experiences, gamma):
+		self.learning_count += 1
+		print('Learning')
 		states, actions, rewards, next_states, dones = experiences
 
 		Q_targets_next = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
@@ -101,6 +104,7 @@ class DQN_Agent:
 		eps = eps_start
 
 		for i_episode in range(1, n_episodes+1):
+			print(i_episode)
 			state = env.reset()
 			score = 0
 			step = 0
@@ -120,10 +124,10 @@ class DQN_Agent:
 			steps.append(step)
 			eps = max(eps_end, eps_decay * eps)
 			if i_episode % 500 == 0:
-				print('\rEpisode {} \tAverage Score {:.2f}'.format(i_episode, np.mean(scores_window)))
+				print('\rEpisode {} Eps {} \tAverage Score {:.2f}'.format(i_episode, eps, np.mean(scores_window)))
 				print('Everage steps: ', np.mean(steps[-100:]))
 		torch.save(self.qnetwork_local.state_dict(), './results/pure_dqn_cart_pole.pth')
-
+		print('The agent trained {} times'.format(self.learning_count))
 		return scores, steps
 
 
