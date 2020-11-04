@@ -8,7 +8,7 @@ from collections import namedtuple, deque
 import matplotlib.pyplot as plt 
 import gym
 
-device = torch.device('cuda:0 ' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 class ReplayBuffer:
 	def __init__(self, action_size, buffer_size, batch_size, seed):

@@ -1,0 +1,91 @@
+Device used: cuda:0
+State size:  4
+Action size:  2
+QNetwork(
+  (lstm): LSTM(4, 512, batch_first=True)
+  (fc1): Linear(in_features=512, out_features=512, bias=True)
+  (fc2): Linear(in_features=512, out_features=512, bias=True)
+  (fc3): Linear(in_features=512, out_features=2, bias=True)
+)
+Episode 500 Eps 0.6063789448611848 	Average Score 22.55
+Everage steps:  18.54
+Episode 1000 Eps 0.3676954247709635 	Average Score 55.40
+Everage steps:  47.95
+Episode 1500 Eps 0.22296276370290227 	Average Score 33.45
+Everage steps:  33.36
+Episode 2000 Eps 0.1351999253974994 	Average Score 31.70
+Everage steps:  34.29
+Episode 2500 Eps 0.08198238810784661 	Average Score 37.00
+Everage steps:  32.53
+Episode 3000 Eps 0.04971239399803625 	Average Score 30.60
+Everage steps:  31.11
+Episode 3500 Eps 0.030144549019052724 	Average Score 41.35
+Everage steps:  36.45
+Episode 4000 Eps 0.018279019827489446 	Average Score 37.70
+Everage steps:  42.11
+Episode 4500 Eps 0.011084012756089733 	Average Score 53.95
+Everage steps:  50.02
+Episode 5000 Eps 0.006721111959865607 	Average Score 65.70
+Everage steps:  67.56
+Episode 5500 Eps 0.004075540778517193 	Average Score 131.40
+Everage steps:  99.06
+Episode 6000 Eps 0.00247132211701599 	Average Score 128.65
+Everage steps:  121.91
+Episode 6500 Eps 0.0014985576977282634 	Average Score 160.40
+Everage steps:  152.51
+Episode 7000 Eps 0.001 	Average Score 185.50
+Everage steps:  193.65
+Episode 7500 Eps 0.001 	Average Score 197.25
+Everage steps:  197.69
+Episode 8000 Eps 0.001 	Average Score 186.80
+Everage steps:  187.86
+Episode 8500 Eps 0.001 	Average Score 194.30
+Everage steps:  197.0
+Episode 9000 Eps 0.001 	Average Score 142.25
+Everage steps:  149.87
+Episode 9500 Eps 0.001 	Average Score 166.60
+Everage steps:  157.03
+Episode 10000 Eps 0.001 	Average Score 132.75
+Everage steps:  132.39
+Episode 10500 Eps 0.001 	Average Score 189.20
+Everage steps:  176.98
+Episode 11000 Eps 0.001 	Average Score 192.50
+Everage steps:  182.77
+Episode 11500 Eps 0.001 	Average Score 196.80
+Everage steps:  192.24
+Episode 12000 Eps 0.001 	Average Score 115.95
+Everage steps:  107.21
+Episode 12500 Eps 0.001 	Average Score 180.05
+Everage steps:  165.35
+Episode 13000 Eps 0.001 	Average Score 194.05
+Everage steps:  192.56
+Episode 13500 Eps 0.001 	Average Score 154.60
+Everage steps:  146.04
+Episode 14000 Eps 0.001 	Average Score 197.05
+Everage steps:  194.67
+Episode 14500 Eps 0.001 	Average Score 195.95
+Everage steps:  195.87
+Episode 15000 Eps 0.001 	Average Score 200.00
+Everage steps:  197.34
+Episode 15500 Eps 0.001 	Average Score 196.75
+Everage steps:  196.13
+Episode 16000 Eps 0.001 	Average Score 200.00
+Everage steps:  198.42
+Episode 16500 Eps 0.001 	Average Score 200.00
+Everage steps:  197.65
+Episode 17000 Eps 0.001 	Average Score 196.80
+Everage steps:  198.24
+Episode 17500 Eps 0.001 	Average Score 199.60
+Everage steps:  198.25
+Episode 18000 Eps 0.001 	Average Score 191.10
+Everage steps:  193.09
+Episode 18500 Eps 0.001 	Average Score 198.00
+Everage steps:  193.01
+Episode 19000 Eps 0.001 	Average Score 200.00
+Everage steps:  197.83
+Episode 19500 Eps 0.001 	Average Score 200.00
+Everage steps:  198.82
+Episode 20000 Eps 0.001 	Average Score 200.00
+Everage steps:  196.29
+The agent trained 569541 times
+Done training

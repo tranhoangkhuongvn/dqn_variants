@@ -12,7 +12,7 @@ import gym
 from  replay_buffer import ReplayBuffer, ReplayBuffer_LSTM
 
 #Find the device: cpu or gpu
-device = torch.device('cuda:0 ' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print('Device used:', device)
 
 class QNetwork(nn.Module):
