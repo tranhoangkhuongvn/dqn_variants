@@ -194,8 +194,9 @@ if __name__ == '__main__':
 	ax1.grid()	
 
 	ax2 = fig.add_subplot(122)
-	ax2.plot(eps, smooth_curve(scores, 20))
+	ax2.plot(eps, smooth_curve(steps, 20))
 	ax2.set_ylabel('Steps')
 	ax2.set_xlabel('Episode #')
 	ax2.grid()
+	plt.tight_layout()
 	plt.savefig('./results/dueling_ddqn_cart_pole.png')
