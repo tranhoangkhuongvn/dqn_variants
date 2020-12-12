@@ -12,7 +12,7 @@ import gym
 from  replay_buffer import ReplayBuffer
 
 #Find the device: cpu or gpu
-device = torch.device('cuda:0 ' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print('Device used:', device)
 
 class Dueling_QNetwork(nn.Module):
@@ -191,10 +191,11 @@ if __name__ == '__main__':
 	ax1.plot(eps, smooth_curve(scores, 20))
 	ax1.set_ylabel('Score')
 	ax1.set_xlabel('Episode #')
-	
+	ax1.grid()	
+
 	ax2 = fig.add_subplot(122)
 	ax2.plot(eps, smooth_curve(scores, 20))
 	ax2.set_ylabel('Steps')
 	ax2.set_xlabel('Episode #')
-
+	ax2.grid()
 	plt.savefig('./results/dueling_ddqn_cart_pole.png')

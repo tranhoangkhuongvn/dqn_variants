@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.nn.utils import clip_grad_norm_
+
 import numpy as np
 import random 
 from collections import namedtuple, deque 
@@ -9,30 +11,33 @@ import matplotlib.pyplot as plt
 import gym
 
 
-from  replay_buffer import ReplayBuffer, ReplayBuffer_LSTM
+from  Replay_Buffer import ReplayBuffer, ReplayBuffer_LSTM
 
-#Find the device: cpu or gpu
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print('Device used:', device)
+def weight_init(layers):
+	for layer in layers:
+		torch.nn.init.kaiming_normal_(layer.weight, nonlinearity='relu')
 
 class QNetwork(nn.Module):
-	def __init__(self, state_size, action_size, batch_size=64, time_step=8, seed=42, fc1_units=512, fc2_units=512):
+	def __init__(self, state_size, action_size, fc1_units=512, hidden_size=256, batch_size=32, seed=0):
 		super(QNetwork, self).__init__()
 		self.seed = torch.manual_seed(seed)
 		self.state_size = state_size
 		self.action_size = action_size
-		self.lstm = nn.LSTM(input_size=state_size, hidden_size=512,num_layers=1, batch_first=True)
-		self.fc1 = nn.Linear(512, fc1_units)
-		self.fc2 = nn.Linear(fc1_units, fc2_units)
-		self.fc3 = nn.Linear(fc2_units, action_size)
+		self.fc1 = nn.Linear(state_size, hidden_size)
+		self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size,num_layers=1, batch_first=True)
+		self.fc3 = nn.Linear(hidden_size, action_size)
 		self.batch_size = batch_size
-		self.time_step = time_step
+		weight_init([self.fc1])
 
 
-	def forward(self, state, hidden_state, cell_state, batch_size=64, time_step=8):
-		if not isinstance(state, torch.Tensor):
-			state = torch.from_numpy(state).float()
+	def forward(self, state, hidden_state):
+		"""
+		(1) act --> batch of state into action
+		(2) learn --> batch x seq_len x state --> we can still feed in batch x state at a time
+		to keep seq == 1 for both cases
+		"""
 		#print('state shape:', state.shape)
+		x = torch.relu(self.fc1(state))
 		state = state.view(batch_size, time_step, self.state_size)
 		lstm_out = self.lstm(state, (hidden_state, cell_state))
 		
@@ -268,7 +273,9 @@ if __name__ == '__main__':
 	TAU = 0.001
 	LR = 0.00025 
 	UPDATE_EVERY = 5 
-
+	
+	device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+	print('Device used:', device)
 
 	env = gym.make('CartPole-v0')
 	#env = gym.make('Taxi-v2')
