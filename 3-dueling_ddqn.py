@@ -8,12 +8,8 @@ from collections import namedtuple, deque
 import matplotlib.pyplot as plt 
 import gym
 
-
+from utils import *
 from  replay_buffer import ReplayBuffer
-
-#Find the device: cpu or gpu
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print('Device used:', device)
 
 class Dueling_QNetwork(nn.Module):
 	def __init__(self, state_size, action_size, seed, fc1_units=512, fc2_units=512):
@@ -48,17 +44,17 @@ class Dueling_QNetwork(nn.Module):
 
 
 class DDQN_Agent:
-	def __init__(self, state_size, action_size, seed, learning_rate=1e-4):
+	def __init__(self, state_size, action_size, device, seed, learning_rate=1e-4):
 		self.state_size = state_size
 		self.action_size = action_size
 		self.seed = random.seed(seed)
-
-		self.qnetwork_local = Dueling_QNetwork(state_size, action_size, seed).to(device)
-		self.qnetwork_target = Dueling_QNetwork(state_size, action_size, seed).to(device)
+		self.device = device
+		self.qnetwork_local = Dueling_QNetwork(state_size, action_size, seed).to(self.device)
+		self.qnetwork_target = Dueling_QNetwork(state_size, action_size, seed).to(self.device)
 		self.soft_update(self.qnetwork_local, self.qnetwork_target, 1.0)
 		self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=learning_rate)
 
-		self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
+		self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, self.device, seed)
 		self.t_step = 0
 
 
@@ -71,7 +67,7 @@ class DDQN_Agent:
 				self.learn(experiences, GAMMA)
 
 	def act(self, state, eps=0.):
-		state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+		state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
 		#set network to eval mode
 		self.qnetwork_local.eval()
 		with torch.no_grad():
@@ -118,8 +114,8 @@ class DDQN_Agent:
 		steps = []
 		scores_window = deque(maxlen=20)
 		eps = eps_start
-
-		for i_episode in range(1, n_episodes+1):
+		result_stat = Stats(num_episodes = n_episodes, continuous=True)
+		for i_episode in range(n_episodes):
 			state = env.reset()
 			score = 0
 			step = 0
@@ -132,6 +128,9 @@ class DDQN_Agent:
 				state = next_state 
 				score += reward 
 				step = t
+
+				result_stat.episode_rewards[i_episode] += reward
+				result_stat.episode_lengths[i_episode] = t
 				if done:
 					break
 			scores_window.append(score)
@@ -143,7 +142,7 @@ class DDQN_Agent:
 				print('Everage steps: ', np.mean(steps[-100:]))
 		torch.save(self.qnetwork_local.state_dict(), './results/dueling_ddqn_cart_pole.pth')
 
-		return scores, steps
+		return result_stat, scores, steps
 
 
 def smooth_curve(inputs, I):
@@ -165,6 +164,10 @@ if __name__ == '__main__':
 	TAU = 0.001
 	LR = 1e-4
 	UPDATE_EVERY = 5
+	#Find the device: cpu or gpu
+	device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+	print('Device used:', device)
+
 
 
 	env = gym.make('CartPole-v0')
@@ -173,28 +176,29 @@ if __name__ == '__main__':
 
 	print('State size: ', state_size)
 	print('Action size: ', num_actions)
-
-	#q_network = QNetwork(state_size, num_actions, 42)
-	#print(q_network)
-	#state0 = env.reset()
-	#print('First qnetwork output: ', q_network(state0))
-
-
-	dqn_agent = DDQN_Agent(state_size=state_size, action_size=num_actions, seed=42, learning_rate=LR)
-	scores, steps = dqn_agent.dqn_train()
+	seed_list = [0, 42, 500, 1000]
+	stats = []	
+	for i in range(3):
+		print('Trial:', i)
+		dqn_agent = DDQN_Agent(state_size=state_size, action_size=num_actions, device=device, seed=seed_list[i], learning_rate=LR)
+		stat, scores, steps = dqn_agent.dqn_train()
+		stats.append(stat)
+	
 	print('Done training')
 	env.close()
 	eps = list(range(len(scores)))
 
 	fig = plt.figure()
 	ax1 = fig.add_subplot(121)
-	ax1.plot(eps, smooth_curve(scores, 20))
+	#ax1.plot(eps, smooth_curve(scores, 20))
+	plot_rewards(ax1, stats, smoothing_window=20)
 	ax1.set_ylabel('Score')
 	ax1.set_xlabel('Episode #')
 	ax1.grid()	
 
 	ax2 = fig.add_subplot(122)
-	ax2.plot(eps, smooth_curve(steps, 20))
+	#ax2.plot(eps, smooth_curve(steps, 20))
+	plot_steps(ax2, stats, smoothing_window=20)
 	ax2.set_ylabel('Steps')
 	ax2.set_xlabel('Episode #')
 	ax2.grid()
