@@ -182,6 +182,8 @@ if __name__ == '__main__':
 		print('Trial:', i)
 		dqn_agent = DDQN_Agent(state_size=state_size, action_size=num_actions, device=device, seed=seed_list[i], learning_rate=LR)
 		stat, scores, steps = dqn_agent.dqn_train()
+		print('logging data for trial', i)
+		stat.log_data('trial' + str(i))
 		stats.append(stat)
 	
 	print('Done training')

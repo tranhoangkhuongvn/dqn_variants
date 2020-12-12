@@ -242,12 +242,20 @@ class SubgoalDiscovery():
 
 
 class Stats():
-    def __init__(self, num_episodes=20000, num_states = 6, continuous=False):
-        self.episode_rewards = np.zeros(num_episodes)
-        self.episode_lengths = np.zeros(num_episodes)
-        if not continuous:
-            self.visitation_count = np.zeros((num_states, num_episodes))
-            self.target_count = np.zeros((num_states, num_episodes))
+	def __init__(self, num_episodes=20000, num_states = 6, log_dir='./', continuous=False):
+		self.episode_rewards = np.zeros(num_episodes)
+		self.episode_lengths = np.zeros(num_episodes)
+		if not continuous:
+			self.visitation_count = np.zeros((num_states, num_episodes))
+			self.target_count = np.zeros((num_states, num_episodes))
+		self.log_dir = log_dir	
+
+	def log_data(self, file_name):
+		save_name = self.log_dir + file_name
+		with open(save_name+'.npy', 'wb') as f:
+			np.save(f, self.episode_rewards)
+			np.save(f, self.episode_lengths)
+		print('Done logging')	
 
 def plot_rewards(ax, episodes_ydata, smoothing_window = 100, c='b'):
     #smoothing_window = 100
