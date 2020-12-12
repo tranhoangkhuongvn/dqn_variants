@@ -252,38 +252,41 @@ class Stats():
 
 	def log_data(self, file_name):
 		save_name = self.log_dir + file_name
-		with open(save_name+'.npy', 'wb') as f:
-			np.save(f, self.episode_rewards)
-			np.save(f, self.episode_lengths)
-		print('Done logging')	
+		np.savez(save_name, reward=self.episode_rewards, step=self.episode_lengths)
+
 
 def plot_rewards(ax, episodes_ydata, smoothing_window = 100, c='b'):
-    #smoothing_window = 100
+	#smoothing_window = 100
 
-    overall_stats_q_learning = []
-    for trialdata in episodes_ydata:
-        overall_stats_q_learning.append(pd.Series(trialdata.episode_rewards).rolling(smoothing_window, min_periods=smoothing_window).mean())
-        #overall_stats_q_learning.append(pd.Series(trialdata.episode_rewards).rolling(smoothing_window, min_periods=smoothing_window).mean().data)
-    m_stats_q_learning = np.mean(overall_stats_q_learning, axis=0)
-    std_stats_q_learning = np.std(overall_stats_q_learning, axis=0)
+	overall_stats_q_learning = []
+	for trialdata in episodes_ydata:
+		overall_stats_q_learning.append(pd.Series(trialdata.episode_rewards).rolling(smoothing_window, min_periods=smoothing_window).mean())
+		#overall_stats_q_learning.append(pd.Series(trialdata.episode_rewards).rolling(smoothing_window, min_periods=smoothing_window).mean().data)
+	m_stats_q_learning = np.mean(overall_stats_q_learning, axis=0)
+	std_stats_q_learning = np.std(overall_stats_q_learning, axis=0)
 
-    ax.plot(range(len(m_stats_q_learning)), m_stats_q_learning, c=c)
-    ax.fill_between(range(len(std_stats_q_learning)), m_stats_q_learning - std_stats_q_learning, m_stats_q_learning + std_stats_q_learning, alpha=0.5, edgecolor=c, facecolor=c)
+	ax.plot(range(len(m_stats_q_learning)), m_stats_q_learning, c=c)
+	ax.fill_between(range(len(std_stats_q_learning)), m_stats_q_learning - std_stats_q_learning, m_stats_q_learning + std_stats_q_learning, alpha=0.5, edgecolor=c, facecolor=c)
+	ax.set_ylabel('Score')
+	ax.set_xlabel('Episode #')
+	ax.grid()
 
 
 def plot_steps(ax, episodes_ydata, smoothing_window = 100, c='g'):
-    #smoothing_window = 100
+	#smoothing_window = 100
 
-    overall_stats_q_learning = []
-    for trialdata in episodes_ydata:
-        overall_stats_q_learning.append(pd.Series(trialdata.episode_lengths).rolling(smoothing_window, min_periods=smoothing_window).mean())
-        #overall_stats_q_learning.append(pd.Series(trialdata.episode_lengths).rolling(smoothing_window, min_periods=smoothing_window).mean().data)
-    m_stats_q_learning = np.mean(overall_stats_q_learning, axis=0)
-    std_stats_q_learning = np.std(overall_stats_q_learning, axis=0)
+	overall_stats_q_learning = []
+	for trialdata in episodes_ydata:
+		overall_stats_q_learning.append(pd.Series(trialdata.episode_lengths).rolling(smoothing_window, min_periods=smoothing_window).mean())
+		#overall_stats_q_learning.append(pd.Series(trialdata.episode_lengths).rolling(smoothing_window, min_periods=smoothing_window).mean().data)
+	m_stats_q_learning = np.mean(overall_stats_q_learning, axis=0)
+	std_stats_q_learning = np.std(overall_stats_q_learning, axis=0)
 
-    ax.plot(range(len(m_stats_q_learning)), m_stats_q_learning, c=c)
-    ax.fill_between(range(len(std_stats_q_learning)), m_stats_q_learning - std_stats_q_learning, m_stats_q_learning + std_stats_q_learning, alpha=0.5, edgecolor=c, facecolor=c)
-
+	ax.plot(range(len(m_stats_q_learning)), m_stats_q_learning, c=c)
+	ax.fill_between(range(len(std_stats_q_learning)), m_stats_q_learning - std_stats_q_learning, m_stats_q_learning + std_stats_q_learning, alpha=0.5, edgecolor=c, facecolor=c)
+	ax.set_ylabel('Steps')
+	ax.set_xlabel('Episode #')
+	ax.grid()
 
 def plot_visitation_counts(episodes_ydata, smoothing_window = 1000, c=['b', 'g', 'r', 'y', 'k', 'c'], num_states = None):
 
