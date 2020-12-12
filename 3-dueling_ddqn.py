@@ -178,7 +178,7 @@ if __name__ == '__main__':
 	print('Action size: ', num_actions)
 	seed_list = [0, 42, 500, 1000]
 	stats = []	
-	for i in range(2):
+	for i in range(4):
 		print('Trial:', i)
 		dqn_agent = DDQN_Agent(state_size=state_size, action_size=num_actions, device=device, seed=seed_list[i], learning_rate=LR)
 		stat, scores, steps = dqn_agent.dqn_train()
@@ -192,13 +192,11 @@ if __name__ == '__main__':
 
 	fig = plt.figure()
 	ax1 = fig.add_subplot(121)
-	#ax1.plot(eps, smooth_curve(scores, 20))
 	plot_rewards(ax1, stats, smoothing_window=20)
 	ax1.set_ylabel('Score')
 	ax1.set_xlabel('Episode #')
 
 	ax2 = fig.add_subplot(122)
-	#ax2.plot(eps, smooth_curve(steps, 20))
 	plot_steps(ax2, stats, smoothing_window=20)
 	ax2.set_ylabel('Steps')
 	ax2.set_xlabel('Episode #')
